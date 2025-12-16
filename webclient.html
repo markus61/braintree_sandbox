@@ -1,0 +1,122 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>One Product Checkout</title>
+    <script src="https://js.braintreegateway.com/web/dropin/1.46.0/js/dropin.min.js"></script>
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 720px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        button {
+            padding: 10px 14px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        #status {
+            margin-top: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Buy “1× Data Pack”</h1>
+
+    <div class="card">
+        <div class="row">
+            <div>
+                <div><strong>Product:</strong> 1× Data Pack</div>
+                <div><strong>Price:</strong> €9.99</div>
+            </div>
+            <button id="payBtn" disabled>Pay</button>
+        </div>
+
+        <div id="dropin-container" style="margin-top: 16px;"></div>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        const AMOUNT = "9.99";
+        const statusEl = document.getElementById("status");
+        const payBtn = document.getElementById("payBtn");
+
+        function setStatus(msg) { statusEl.textContent = msg; }
+
+        async function main() {
+            setStatus("Initializing…");
+
+            // 1) Get client token from your server
+            const tokenRes = await fetch(`${API_BASE}/braintree/client-token`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ customer_id: null })
+            });
+            if (!tokenRes.ok) throw new Error(await tokenRes.text());
+            const { clientToken } = await tokenRes.json();
+
+            // 2) Create Drop-in
+            const dropinInstance = await braintree.dropin.create({
+                authorization: clientToken,
+                container: "#dropin-container",
+            });
+
+            payBtn.disabled = false;
+            setStatus("Ready.");
+
+            // 3) On click: request nonce, then call your /sale endpoint
+            payBtn.addEventListener("click", async () => {
+                payBtn.disabled = true;
+                try {
+                    setStatus("Requesting payment method…");
+                    const payload = await dropinInstance.requestPaymentMethod();
+
+                    setStatus("Creating transaction…");
+                    const saleRes = await fetch(`${API_BASE}/braintree/transactions/sale`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            amount: AMOUNT,
+                            payment_method_nonce: payload.nonce,
+                            submit_for_settlement: true,
+                            order_id: `one-product-${Date.now()}`
+                        })
+                    });
+
+                    const saleBody = await saleRes.json().catch(() => ({}));
+                    if (!saleRes.ok) throw new Error(JSON.stringify(saleBody, null, 2));
+
+                    setStatus(`Success!\nTransaction:\n${JSON.stringify(saleBody, null, 2)}`);
+                } catch (e) {
+                    setStatus(`Error:\n${e.message || e}`);
+                } finally {
+                    payBtn.disabled = false;
+                }
+            });
+        }
+
+        main().catch(err => setStatus(`Init failed:\n${err.message || err}`));
+    </script>
+</body>
+
+</html>
