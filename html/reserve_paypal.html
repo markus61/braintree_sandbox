@@ -1,0 +1,210 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Reserve → Claim Demo (PayPal)</title>
+
+    <!-- Braintree Web SDK (v3) -->
+    <script src="https://js.braintreegateway.com/web/3.103.0/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.103.0/js/paypal-checkout.min.js"></script>
+
+    <!-- PayPal JS SDK (allows sandbox usage via client-id=sb) -->
+    <script src="https://www.paypal.com/sdk/js?client-id=sb&currency=EUR&intent=authorize"></script>
+
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 760px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 14px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button[disabled] {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        #status {
+            margin-top: 12px;
+            white-space: pre-wrap;
+        }
+
+        .mono {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Buy “1× Data Pack” (PayPal Reserve → Claim)</h1>
+
+    <div class="card">
+        <div class="row">
+            <div>
+                <div><strong>Product:</strong> 1× Data Pack</div>
+                <div><strong>Price:</strong> €9.99</div>
+            </div>
+            <div class="row">
+                <button id="claimBtn" disabled>Claim</button>
+                <button id="cancelBtn" disabled>Cancel</button>
+            </div>
+        </div>
+
+        <div id="paypal-button"></div>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        const AMOUNT = "9.99";
+        const CURRENCY = "EUR";
+
+        const statusEl = document.getElementById("status");
+        const claimBtn = document.getElementById("claimBtn");
+        const cancelBtn = document.getElementById("cancelBtn");
+
+        let paypalCheckoutInstance = null;
+        let currentTxId = null;
+
+        const setStatus = (msg) => statusEl.textContent = msg;
+
+        async function api(path, opts = {}) {
+            const res = await fetch(`${API_BASE}${path}`, {
+                headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+                ...opts
+            });
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(JSON.stringify(body, null, 2) || res.statusText);
+            return body;
+        }
+
+        async function refreshStatus() {
+            if (!currentTxId) return;
+            const tx = await api(`/braintree/transactions/${currentTxId}`, { method: "GET" });
+            setStatus(`Transaction status:\n${JSON.stringify(tx, null, 2)}`);
+        }
+
+        function enablePostReserveActions(enabled) {
+            claimBtn.disabled = !enabled;
+            cancelBtn.disabled = !enabled;
+        }
+
+        async function init() {
+            setStatus("Initializing…");
+
+            // 1) Fetch client token
+            const { clientToken } = await api("/braintree/client-token", {
+                method: "POST",
+                body: JSON.stringify({ customer_id: null })
+            });
+
+            // 2) Create Braintree client and PayPal checkout instance
+            const clientInstance = await braintree.client.create({ authorization: clientToken });
+            paypalCheckoutInstance = await braintree.paypalCheckout.create({ client: clientInstance });
+
+            // 3) Render PayPal button and wire reserve flow
+            paypal.Buttons({
+                fundingSource: paypal.FUNDING.PAYPAL,
+                style: {
+                    shape: "rect",
+                    color: "gold",
+                    layout: "horizontal",
+                    label: "paypal"
+                },
+                createOrder() {
+                    // In authorize intent we let Braintree create payment payload
+                    return paypalCheckoutInstance.createPayment({
+                        flow: "checkout",
+                        amount: AMOUNT,
+                        currency: CURRENCY,
+                        intent: "authorize"
+                    });
+                },
+                onApprove(data) {
+                    setStatus("Authorizing PayPal payment…");
+                    return paypalCheckoutInstance.tokenizePayment(data)
+                        .then(async (payload) => {
+                            setStatus("Reserving (authorize only)…");
+                            const reserved = await api("/braintree/transactions/reserve", {
+                                method: "POST",
+                                body: JSON.stringify({
+                                    amount: AMOUNT,
+                                    payment_method_nonce: payload.nonce,
+                                    order_id: `paypal-reserve-demo-${Date.now()}`
+                                })
+                            });
+
+                            currentTxId = reserved.id;
+                            enablePostReserveActions(true);
+                            setStatus(`Reserved!\n${JSON.stringify(reserved, null, 2)}\n\nTxId: ${currentTxId}`);
+                            await refreshStatus();
+                        })
+                        .catch(err => {
+                            setStatus(`Tokenize failed:\n${err.message || err}`);
+                        });
+                },
+                onCancel() {
+                    setStatus("PayPal flow canceled by user.");
+                },
+                onError(err) {
+                    setStatus(`PayPal error:\n${err.message || err}`);
+                }
+            }).render("#paypal-button");
+
+            setStatus("Ready. Click the PayPal button to authorize and reserve.");
+        }
+
+        claimBtn.addEventListener("click", async () => {
+            if (!currentTxId) return;
+            claimBtn.disabled = true;
+            try {
+                setStatus("Claiming (submit for settlement)…");
+                const claimed = await api(`/braintree/transactions/${currentTxId}/claim`, { method: "POST" });
+                setStatus(`Claimed!\n${JSON.stringify(claimed, null, 2)}`);
+                await refreshStatus();
+            } catch (e) {
+                setStatus(`Error:\n${e.message || e}`);
+                claimBtn.disabled = false;
+            }
+        });
+
+        cancelBtn.addEventListener("click", async () => {
+            if (!currentTxId) return;
+            cancelBtn.disabled = true;
+            try {
+                setStatus("Cancelling (void)…");
+                const cancelled = await api(`/braintree/transactions/${currentTxId}/cancel`, { method: "POST" });
+                setStatus(`Cancelled!\n${JSON.stringify(cancelled, null, 2)}`);
+                await refreshStatus();
+            } catch (e) {
+                setStatus(`Error:\n${e.message || e}`);
+                cancelBtn.disabled = false;
+            }
+        });
+
+        init().catch(err => setStatus(`Init failed:\n${err.message || err}`));
+    </script>
+</body>
+
+</html>
