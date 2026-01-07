@@ -11,20 +11,24 @@ endpoints for:
 * handling webhook notifications for downstream business logic integration.
 """
 
+from pathlib import Path
 from contextlib import asynccontextmanager
 
-import braintree
-import uvicorn
-from braintree.exceptions.not_found_error import NotFoundError
+from json import dumps, loads
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+import httpx
+import braintree
 
 
 class Settings(BaseSettings):
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env", env_file_encoding="utf-8")
     bt_env: str = "sandbox"  # "sandbox" | "production"
     bt_merchant_id: str
     bt_public_key: str
@@ -34,6 +38,7 @@ class Settings(BaseSettings):
 
 
 def _bt_environment(value: str) -> braintree.Environment:
+    """Return the Braintree environment for the given setting value."""
     v = value.lower()
     if v == "production":
         return braintree.Environment.Production
@@ -43,6 +48,7 @@ def _bt_environment(value: str) -> braintree.Environment:
 
 
 def create_gateway(config: Settings) -> braintree.BraintreeGateway:
+    """Build a Braintree gateway client from configuration values."""
     return braintree.BraintreeGateway(
         braintree.Configuration(
             environment=_bt_environment(config.bt_env),
@@ -55,6 +61,7 @@ def create_gateway(config: Settings) -> braintree.BraintreeGateway:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Initialize and release application resources for FastAPI lifespan."""
     load_dotenv()
     settings = Settings()
     app.state.settings = settings
@@ -78,7 +85,60 @@ app.add_middleware(
 )
 
 
+def get_mps_token() -> str:
+    """Fetch and return the OAuth access token for MPS API calls."""
+
+    req_url = "https://global.telekom.com/gcp-web-api/oauth"
+
+    headers_list = {
+        "Accept": "*/*",
+        "User-Agent": "Thunder Client (https://www.thunderclient.com)",
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Basic NVhCaDhnYTc0ZTpFTFVJS1RCVUhWRFBPTUFJSUhERg=="
+    }
+
+    payload = "grant_type=client_credentials&scope=T00X7T70"
+
+    with httpx.Client(timeout=10.0) as client:
+        data = client.post(req_url, data=payload, headers=headers_list)
+    return loads(data.text)["access_token"]
+
+
+MPS_TOKEN = get_mps_token()
+
+
+def initialize_braintree(method: str) -> str:
+    """Request a client token for the provided payment method type."""
+    req_url = "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-mapi-adapter/braintree/initializeClient"
+
+    headers_dict = {
+        "Accept": "*/*",
+        "Authorization": f"bearer {MPS_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
+    payload = dumps({
+        "businessPartnerConfigId": "3023",
+        "paymentMethodType": method
+    })
+
+    try:
+        with httpx.Client(timeout=10.0) as client:
+            response = client.post(req_url, data=payload, headers=headers_dict)
+            response.raise_for_status()
+    except httpx.HTTPStatusError as exc:
+        raise RuntimeError(
+            f"Failed to initialize Braintree (status {exc.response.status_code}): {exc.response.text}"
+        ) from exc
+    except httpx.RequestError as exc:
+        raise RuntimeError(
+            "Failed to reach Braintree initializeClient endpoint") from exc
+
+    return loads(response.text)["clientToken"]
+
+
 def get_gateway(request: Request) -> braintree.BraintreeGateway:
+    """Retrieve the shared Braintree gateway from the FastAPI app state."""
     return request.app.state.gateway
 
 
@@ -93,14 +153,6 @@ class PaymentMethodCreateRequest(BaseModel):
     make_default: bool = True
 
 
-class SaleRequest(BaseModel):
-    amount: str
-    payment_method_token: str | None = None
-    payment_method_nonce: str | None = None
-    submit_for_settlement: bool = True
-    order_id: str | None = None
-
-
 class TransactionReserveRequest(BaseModel):
     amount: str
     payment_method_token: str | None = None
@@ -108,194 +160,144 @@ class TransactionReserveRequest(BaseModel):
     order_id: str | None = None
 
 
-def _ensure_single_payment_method(token: str | None, nonce: str | None) -> None:
-    if (token is None) == (nonce is None):
+@app.get("/html/{filename}", response_class=HTMLResponse)
+def get_html_file(filename: str):
+    """Serve an HTML file from the local html directory if it is safe."""
+    html_root = Path("html").resolve()
+    candidate = (html_root / filename).resolve()
+    if html_root not in candidate.parents or candidate.suffix != ".html":
+        raise HTTPException(status_code=400, detail="Invalid path segment")
+    try:
+        content = candidate.read_text(encoding="utf-8")
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="File not found") from exc
+    return HTMLResponse(content=content, headers={"Cache-Control": "no-cache"})
+
+
+@app.post("/client-token/{payment_method}")
+def create_client_token(payment_method: str) -> dict:
+    """Generate a client token for the specified payment method."""
+    if payment_method not in ["creditcard", "applepay", "googlepay", "paypal"]:
         raise HTTPException(
             status_code=400,
-            detail="Provide exactly one of payment_method_token or payment_method_nonce",
+            detail="Unsupported payment method type",
         )
+    token = initialize_braintree(payment_method)
+    print(f"\nToken: {token}\n")
+    return {"clientToken": token}
 
 
-def _serialize_transaction(tx: braintree.Transaction) -> dict:
-    """Expose a JSON-friendly subset of transaction attributes."""
-
-    def _iso(dt):
-        return dt.isoformat() if dt else None
-
-    return {
-        "id": getattr(tx, "id", None),
-        "status": getattr(tx, "status", None),
-        "amount": getattr(tx, "amount", None),
-        "currencyIsoCode": getattr(tx, "currency_iso_code", None),
-        "orderId": getattr(tx, "order_id", None),
-        "paymentInstrumentType": getattr(tx, "payment_instrument_type", None),
-        "customerId": getattr(tx, "customer_details", None)
-        and getattr(tx.customer_details, "id", None),
-        "authorizationExpiresAt": _iso(getattr(tx, "authorization_expires_at", None)),
-        "createdAt": _iso(getattr(tx, "created_at", None)),
-        "updatedAt": _iso(getattr(tx, "updated_at", None)),
-    }
-
-
-# ---------- Endpoints ----------
-@app.get("/health")
-def health():
-    return {"ok": True}
-
-
-@app.post("/braintree/client-token")
-def create_client_token(
-    body: ClientTokenRequest,
-    gw: braintree.BraintreeGateway = Depends(get_gateway),
-):
-    try:
-        token = gw.client_token.generate(
-            {"customer_id": body.customer_id} if body.customer_id else {}
-        )
-        return {"clientToken": token}
-    except Exception as exc:  # SDK surfaces various runtime errors
-        raise HTTPException(status_code=500, detail=str(exc)) from exc
-
-
-@app.post("/braintree/payment-methods")
-def vault_payment_method(
-    body: PaymentMethodCreateRequest,
-    gw: braintree.BraintreeGateway = Depends(get_gateway),
-):
-    result = gw.payment_method.create(
-        {
-            "customer_id": body.customer_id,
-            "payment_method_nonce": body.payment_method_nonce,
-            "options": {"make_default": body.make_default},
-        }
-    )
-    if not result.is_success:
-        raise HTTPException(status_code=400, detail=str(result.message))
-
-    pm = result.payment_method
-    return {
-        "token": pm.token,
-        "type": pm.__class__.__name__,
-        "isDefault": getattr(pm, "default", None),
-    }
-
-
-@app.post("/braintree/transactions/sale")
-def sale(
-    body: SaleRequest,
-    gw: braintree.BraintreeGateway = Depends(get_gateway),
-):
-    _ensure_single_payment_method(body.payment_method_token, body.payment_method_nonce)
-
-    payload: dict[str, object] = {
-        "amount": body.amount,
-        "options": {"submit_for_settlement": body.submit_for_settlement},
-    }
-    if body.order_id:
-        payload["order_id"] = body.order_id
-    if body.payment_method_token:
-        payload["payment_method_token"] = body.payment_method_token
-    else:
-        payload["payment_method_nonce"] = body.payment_method_nonce
-
-    result = gw.transaction.sale(payload)
-    if not result.is_success:
-        raise HTTPException(status_code=402, detail=str(result.message))
-
-    return _serialize_transaction(result.transaction)
-
-
-@app.post("/braintree/transactions/reserve")
+@app.post("/reserve")
 def reserve(
     body: TransactionReserveRequest,
-    gw: braintree.BraintreeGateway = Depends(get_gateway),
 ):
-    _ensure_single_payment_method(body.payment_method_token, body.payment_method_nonce)
-
-    payload: dict[str, object] = {
-        "amount": body.amount,
-        "options": {"submit_for_settlement": False},
+    """Reserve a one-time transaction in the Telekom checkout API."""
+    req_url = "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/reserve"
+    headers_dict = {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": f"bearer {MPS_TOKEN}",
     }
-    if body.order_id:
-        payload["order_id"] = body.order_id
-    if body.payment_method_token:
-        payload["payment_method_token"] = body.payment_method_token
-    else:
-        payload["payment_method_nonce"] = body.payment_method_nonce
 
-    result = gw.transaction.sale(payload)
-    if not result.is_success:
-        raise HTTPException(status_code=400, detail=str(result.message))
+    payload = dumps({
+        "paymentMethod": "creditcard_braintree",
+        "businessPartnerConfigId": "3023",
+        "currency": "EUR",
+        "locale": "de_DE",
+        "description": "Ihr Multibrand Zahlungsmandat",
+        "returnUrl": "http://www.telekom.de",
+        "lineItems": [
+            {
+                "name": "Zahlung + Speicherung des Zahlungsmandats",
+                "description": "Initial 15 € + Speicherung des Zahlungsmandats",
+                "grossAmount": body.amount,
+                "taxRate": 19,
+                "quantity": 1,
+                "uiDetails": {},
+            }
+        ],
+        "paymentServiceData": {"nonce": body.payment_method_nonce},
+        "settlementData": {"settlementConfigurationId": "32727"},
+    })
+    with httpx.Client(timeout=10.0) as client:
+        data = client.post(req_url, data=payload, headers=headers_dict)
 
-    return _serialize_transaction(result.transaction)
+    print(data.text)
+    return data.text
 
 
-@app.get("/braintree/transactions/{transaction_id}")
-def get_transaction(
-    transaction_id: str,
-    gw: braintree.BraintreeGateway = Depends(get_gateway),
+@app.post("/recurring/payment/reserve")
+def reserve_recurring(
+    body: TransactionReserveRequest,
 ):
-    try:
-        transaction = gw.transaction.find(transaction_id)
-    except NotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Transaction not found") from exc
+    """Reserve a recurring mandate-based transaction via the checkout API."""
+    req_url = "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/reserve"
+    headers_dict = {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": f"bearer {MPS_TOKEN}",
+    }
 
-    return _serialize_transaction(transaction)
+    payload = dumps({
+        "paymentMethod": f"{body.payment_method_token}_braintree",
+        "businessPartnerConfigId": "3023",
+        "currency": "EUR",
+        "locale": "de_DE",
+        "description": "Ihr Multibrand Zahlungsmandat",
+        "returnUrl": "http://www.telekom.de",
+        "lineItems": [
+            {
+                "name": "Zahlung + Speicherung des Zahlungsmandats",
+                "description": "Initial 15 € + Speicherung des Zahlungsmandats",
+                "grossAmount": body.amount,
+                "taxRate": 19,
+                "quantity": 1,
+                "uiDetails": {},
+            }
+        ],
+        "paymentServiceData": {"nonce": body.payment_method_nonce},
+        "settlementData": {"settlementConfigurationId": "32727"},
+    })
+    with httpx.Client(timeout=10.0) as client:
+        data = client.post(req_url, data=payload, headers=headers_dict)
+
+    print(data.text)
+    return data.text
 
 
-@app.post("/braintree/transactions/{transaction_id}/claim")
-def claim_transaction(
-    transaction_id: str,
-    gw: braintree.BraintreeGateway = Depends(get_gateway),
+@app.post("/recurring/paypal")
+def recurring_paypal(
+    body: TransactionReserveRequest,
 ):
-    try:
-        result = gw.transaction.submit_for_settlement(transaction_id)
-    except NotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Transaction not found") from exc
+    """Create a recurring PayPal checkout session in the Telekom API."""
+    req_url = "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment"
+    headers_dict = {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": f"bearer {MPS_TOKEN}",
+    }
 
-    if not result.is_success:
-        raise HTTPException(status_code=409, detail=str(result.message))
+    payload = dumps({
+        "paymentMethod": "paypal_braintree",
+        "businessPartnerConfigId": "3023",
+        "currency": "EUR",
+        "locale": "de_DE",
+        "description": "Ihr Multibrand Zahlungsmandat",
+        "returnUrl": "http://www.telekom.de",
+        "lineItems": [
+            {
+                "name": "Zahlung + Speicherung des Zahlungsmandats",
+                "description": f"Initial {body.amount} € + Speicherung des Zahlungsmandats",
+                "grossAmount": body.amount,
+                "taxRate": 19,
+                "quantity": 1,
+                "uiDetails": {},
+            }
+        ],
+        "settlementData": {"settlementConfigurationId": "32727"},
+    })
+    with httpx.Client(timeout=10.0) as client:
+        data = client.post(req_url, data=payload, headers=headers_dict)
 
-    return _serialize_transaction(result.transaction)
-
-
-@app.post("/braintree/transactions/{transaction_id}/cancel")
-def cancel_transaction(
-    transaction_id: str,
-    gw: braintree.BraintreeGateway = Depends(get_gateway),
-):
-    try:
-        result = gw.transaction.void(transaction_id)
-    except NotFoundError as exc:
-        raise HTTPException(status_code=404, detail="Transaction not found") from exc
-
-    if not result.is_success:
-        raise HTTPException(status_code=409, detail=str(result.message))
-
-    return _serialize_transaction(result.transaction)
-
-
-@app.post("/braintree/webhooks")
-async def webhooks(
-    request: Request,
-    gw: braintree.BraintreeGateway = Depends(get_gateway),
-):
-    form = await request.form()
-    bt_signature = form.get("bt_signature")
-    bt_payload = form.get("bt_payload")
-    if not bt_signature or not bt_payload:
-        raise HTTPException(status_code=400, detail="Missing bt_signature/bt_payload")
-
-    try:
-        notification = gw.webhook_notification.parse(bt_signature, bt_payload)
-        return {
-            "kind": str(notification.kind),
-            "timestamp": str(notification.timestamp),
-            "subject_id": getattr(notification.subject, "id", None),
-        }
-    except Exception as exc:  # surface parse errors to clients for debugging
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
-
-
-if __name__ == "__main__":
-    uvicorn.run("src.__main__:app", host="0.0.0.0", port=8000)
+    print(data.text)
+    return data.json()

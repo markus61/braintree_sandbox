@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Recurring Payment Google Pay → Reserve Demo</title>
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <!-- Google Pay -->
+    <script src="https://pay.google.com/gp/p/js/pay.js" async></script>
+
+    <!-- Braintree Web SDK (v3) -->
+    <script src="https://js.braintreegateway.com/web/3.103.0/js/client.min.js"></script>
+    <script src="https://js.braintreegateway.com/web/3.103.0/js/google-payment.min.js"></script>
+
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 760px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        #status {
+            margin-top: 12px;
+            white-space: pre-wrap;
+        }
+
+        .google-pay-container {
+            margin-top: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Buy “Auto Topup” (Recurring Payment Google Pay → Reserve Demo)</h1>
+
+    <div class="card">
+        <div class="row">
+            <div>
+                <div><strong>Product:</strong> 1× Data Pack</div>
+                <div><strong>Price:</strong> €9.99</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div>
+                <strong>Payment Method:</strong>
+                <div class="google-pay-container" id="google-pay-button"></div>
+            </div>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        const AMOUNT = "9.99";
+        const PAYMENT_METHOD = "googlepay";
+
+        const statusEl = document.getElementById("status");
+        const googlePayButtonContainer = document.getElementById("google-pay-button");
+
+        let googlePaymentInstance = null;
+        let paymentsClient = null;
+
+        const setStatus = (msg) => statusEl.textContent = msg;
+
+        async function api(path, opts = {}) {
+            const res = await fetch(`${API_BASE}${path}`, {
+                headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+                ...opts
+            });
+            const body = await res.json().catch(() => ({}));
+            if (!res.ok) throw new Error(JSON.stringify(body, null, 2) || res.statusText);
+            return body;
+        }
+
+        async function init() {
+            setStatus("Initializing…");
+
+            const { clientToken } = await api(`/client-token/${PAYMENT_METHOD}`, {
+                method: "POST",
+                body: JSON.stringify({ customer_id: null })
+            });
+
+            const clientInstance = await braintree.client.create({ authorization: clientToken });
+            googlePaymentInstance = await braintree.googlePayment.create({
+                client: clientInstance,
+                googlePayVersion: 2
+            });
+
+            paymentsClient = new google.payments.api.PaymentsClient({ environment: "TEST" });
+
+            const isReadyToPay = await paymentsClient.isReadyToPay({
+                apiVersion: 2,
+                apiVersionMinor: 0,
+                allowedPaymentMethods: googlePaymentInstance.createPaymentDataRequest().allowedPaymentMethods
+            });
+
+            if (!isReadyToPay.result) {
+                throw new Error("Google Pay is not available on this device/browser.");
+            }
+
+            const button = paymentsClient.createButton({
+                onClick: handleGooglePayClick,
+                buttonType: "long",
+                buttonColor: "default"
+            });
+
+            googlePayButtonContainer.innerHTML = "";
+            googlePayButtonContainer.appendChild(button);
+            setStatus("Ready. Click the Google Pay button to reserve.");
+        }
+
+        async function handleGooglePayClick() {
+            try {
+                setStatus("Opening Google Pay…");
+
+                const paymentDataRequest = googlePaymentInstance.createPaymentDataRequest({
+                    transactionInfo: {
+                        totalPriceStatus: "FINAL",
+                        totalPrice: AMOUNT,
+                        currencyCode: "EUR"
+                    },
+                    merchantInfo: {
+                        merchantName: "Demo Store"
+                    }
+                });
+
+                // Ensure shipping address is optional but provide a hook for mandate requirements.
+                paymentDataRequest.allowedPaymentMethods.forEach(method => {
+                    if (!method.parameters) return;
+                    method.parameters.billingAddressRequired = true;
+                    method.parameters.billingAddressParameters = {
+                        format: "FULL",
+                        phoneNumberRequired: false
+                    };
+                });
+
+                const paymentData = await paymentsClient.loadPaymentData(paymentDataRequest);
+                setStatus("Parsing Google Pay response…");
+                const { nonce } = await googlePaymentInstance.parseResponse(paymentData);
+
+                setStatus("Reserving (authorize only)…");
+                const reserved = await api("/recurring/payment/reserve", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        amount: AMOUNT,
+                        payment_method_nonce: nonce,
+                        payment_method_token: PAYMENT_METHOD,
+                        order_id: `reserve-demo-${Date.now()}`
+                    })
+                });
+
+                setStatus(`Reserved!\n${JSON.stringify(reserved, null, 2)}`);
+            } catch (err) {
+                if (err && err.statusCode === "CANCELED") {
+                    setStatus("Google Pay flow was cancelled by the user.");
+                    return;
+                }
+                setStatus(`Error:\n${err.message || err}`);
+            }
+        }
+
+        window.addEventListener("load", () => {
+            init().catch(err => setStatus(`Init failed:\n${err.message || err}`));
+        });
+    </script>
+</body>
+
+</html>

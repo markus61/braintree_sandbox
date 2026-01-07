@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Recurring Payment PayPal → Reserve Demo</title>
+    <meta http-equiv="Pragma" content="no-cache" />
+
+    <style>
+        body {
+            font-family: system-ui, sans-serif;
+            max-width: 760px;
+            margin: 40px auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        #status {
+            margin-top: 12px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Buy “Auto Topup” (Recurring Payment PayPal → Reserve Demo)</h1>
+
+    <div class="card">
+        <div class="row">
+            <div>
+                <div><strong>Product:</strong> 1× Data Pack</div>
+                <div><strong>Price:</strong> €9.99</div>
+            </div>
+            <div class="row">
+                <button id="paypalReserveBtn" type="button" disabled>Reserve with PayPal</button>
+            </div>
+        </div>
+
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const API_BASE = "http://localhost:8000";
+        const AMOUNT = "9.99";
+
+        const statusEl = document.getElementById("status");
+        const reserveBtn = document.getElementById("paypalReserveBtn");
+
+        const setStatus = (msg) => statusEl.textContent = msg;
+
+        async function api(path, opts = {}) {
+            const res = await fetch(`${API_BASE}${path}`, {
+                headers: { "Content-Type": "application/json", ...(opts.headers || {}) },
+                ...opts
+            });
+            const text = await res.text();
+            let body;
+            try {
+                body = text ? JSON.parse(text) : {};
+            } catch {
+                body = text;
+            }
+            if (!res.ok) {
+                const errMsg = typeof body === "string" && body ? body : JSON.stringify(body, null, 2) || res.statusText;
+                throw new Error(errMsg);
+            }
+            if (typeof body === "string") {
+                try {
+                    return body ? JSON.parse(body) : {};
+                } catch {
+                    return body;
+                }
+            }
+            return body;
+        }
+
+        async function init() {
+            setStatus("Initializing…");
+            reserveBtn.disabled = false;
+            setStatus("Ready. Click the PayPal button to create the checkout session.");
+        }
+
+        reserveBtn.addEventListener("click", async () => {
+            reserveBtn.disabled = true;
+            // Open placeholder window immediately so the navigation stays tied to the user gesture.
+            const popup = window.open("", "paypalCheckout", "width=600,height=800");
+            const popupBlocked = !popup;
+            try {
+                setStatus("Creating PayPal checkout session…");
+                const reserved = await api("/recurring/paypal", {
+                    method: "POST",
+                    body: JSON.stringify({ amount: AMOUNT })
+                });
+
+                let redirectUrl = null;
+                if (reserved && typeof reserved === "object") {
+                    redirectUrl = reserved.redirectUrl || reserved.redirect_url;
+                } else if (typeof reserved === "string" && reserved.trim()) {
+                    try {
+                        const parsed = JSON.parse(reserved);
+                        redirectUrl = parsed.redirectUrl || parsed.redirect_url || null;
+                    } catch {
+                        redirectUrl = null;
+                    }
+                }
+                if (!redirectUrl) {
+                    throw new Error("Missing redirect URL in response.");
+                }
+
+                if (popupBlocked) {
+                    setStatus("Popup blocked. Please allow popups for this site and click Reserve again.");
+                    reserveBtn.disabled = false;
+                    return;
+                }
+
+                try {
+                    popup.document.write("<p style=\"font-family:system-ui\">Redirecting to PayPal…</p>");
+                    popup.document.close();
+                } catch (_) {
+                    // Ignore if we cannot write to the popup document.
+                }
+
+                popup.location.replace(redirectUrl);
+
+                // Focus may throw if browser blocks; ignore silently.
+                try {
+                    popup.focus();
+                } catch (focusErr) {
+                    console.warn("Unable to focus PayPal popup", focusErr);
+                }
+                let checkoutSessionId = null;
+                if (reserved && typeof reserved === "object") {
+                    checkoutSessionId = reserved.checkoutSessionId || reserved.checkout_session_id || null;
+                } else if (typeof reserved === "string" && reserved.trim()) {
+                    try {
+                        const parsed = JSON.parse(reserved);
+                        checkoutSessionId = parsed.checkoutSessionId || parsed.checkout_session_id || null;
+                    } catch {
+                        checkoutSessionId = null;
+                    }
+                }
+                const sessionSuffix = checkoutSessionId ? ` Session ${checkoutSessionId}` : "";
+                setStatus(`Opened PayPal checkout window.${sessionSuffix}`);
+            } catch (err) {
+                if (!popupBlocked && popup && !popup.closed) {
+                    popup.close();
+                }
+                setStatus(`Error:\n${err.message || err}`);
+                reserveBtn.disabled = false;
+            }
+        });
+
+        window.addEventListener("load", () => {
+            init().catch(err => setStatus(`Init failed:\n${err.message || err}`));
+        });
+    </script>
+</body>
+
+</html>
