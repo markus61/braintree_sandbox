@@ -11,6 +11,7 @@ endpoints for:
 * handling webhook notifications for downstream business logic integration.
 """
 
+from os import environ
 from pathlib import Path
 from contextlib import asynccontextmanager
 
@@ -78,6 +79,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:5500",
         "http://127.0.0.1:5500",
+        environ.get("CORS_ALLOWED", ""),
     ],
     allow_credentials=False,
     allow_methods=["*"],
