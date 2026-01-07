@@ -96,7 +96,7 @@ def get_mps_token() -> str:
         "Accept": "*/*",
         "User-Agent": "Thunder Client (https://www.thunderclient.com)",
         "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Basic NVhCaDhnYTc0ZTpFTFVJS1RCVUhWRFBPTUFJSUhERg=="
+        "Authorization": f"Basic {environ.get('MPS_TOKEN', 'xxx==')}",
     }
 
     payload = "grant_type=client_credentials&scope=T00X7T70"
