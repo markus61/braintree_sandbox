@@ -194,6 +194,21 @@ def get_index():
         <li><a href="/html/recurring_payment_reserve_googlepay.html">Recurring Payment Reserve Google Pay</a></li>
         <li><a href="/html/recurring_payment_reserve_paypal.html">Recurring Payment Reserve PayPal</a></li>
     </ul>
+</body>
+</html>
+"""
+    return HTMLResponse(content=body)
+
+
+@app.get("/untested.html")
+def get_untested():
+    body = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
     The following endpoints are untested:
     <ul>
         <li><a href="/html/reserve_paypal.html">One Time Reserve PayPal</a></li>
