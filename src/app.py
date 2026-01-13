@@ -180,6 +180,25 @@ class TransactionReserveRequest(BaseModel):
     order_id: str | None = None
 
 
+@app.get("/")
+def get_index():
+    return """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Index</title>
+</head>
+<body>
+    <ul>
+        <li><a href="link1.html">Link 1</a></li>
+        <li><a href="link2.html">Link 2</a></li>
+        <li><a href="link3.html">Link 3</a></li>
+    </ul>
+</body>
+</html>
+"""
+
+
 @app.get("/html/{filename}", response_class=HTMLResponse)
 def get_html_file(filename: str):
     """Serve an HTML file from the local html directory if it is safe."""
