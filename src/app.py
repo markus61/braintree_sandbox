@@ -136,20 +136,23 @@ def initialize_braintree(method: str) -> str:
             )
         return response
 
-    try:
-        response = post_call()
-    except httpx.HTTPStatusError as exc:
-        if exc.response.status_code == 401:
-            while not MPS_TOKEN:
-                print("Refreshing MPS token...")
+    response = {}
+    while not response:
+        try:
+            print("Refreshing MPS token...")
+            if not MPS_TOKEN:
                 MPS_TOKEN = get_mps_token()
             response = post_call()
-        raise RuntimeError(
-            f"Failed to initialize Braintree (status {exc.response.status_code}): {exc.response.text}"
-        ) from exc
-    except httpx.RequestError as exc:
-        raise RuntimeError(
-            "Failed to reach Braintree initializeClient endpoint") from exc
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 401:
+                MPS_TOKEN = ""
+                print("MPS token expired, refreshing...")
+            raise RuntimeError(
+                f"Failed to initialize Braintree (status {exc.response.status_code}): {exc.response.text}"
+            ) from exc
+        except httpx.RequestError as exc:
+            raise RuntimeError(
+                "Failed to reach Braintree initializeClient endpoint") from exc
 
     return loads(response.text)["clientToken"]
 
