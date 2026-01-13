@@ -106,11 +106,12 @@ def get_mps_token() -> str:
     return loads(data.text)["access_token"]
 
 
-MPS_TOKEN = get_mps_token()
+MPS_TOKEN = ""
 
 
 def initialize_braintree(method: str) -> str:
     """Request a client token for the provided payment method type."""
+    global MPS_TOKEN
     req_url = "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-mapi-adapter/braintree/initializeClient"
 
     headers_dict = {
@@ -119,16 +120,30 @@ def initialize_braintree(method: str) -> str:
         "Content-Type": "application/json"
     }
 
-    payload = dumps({
+    payload = {
         "businessPartnerConfigId": "3023",
         "paymentMethodType": method
-    })
+    }
+
+    def post_call():
+        with httpx.Client(timeout=10.0) as client:
+            response = client.post(
+                req_url, json=payload, headers=headers_dict)
+            response.raise_for_status()
+        if not response:
+            raise RuntimeError(
+                "Received empty response from Braintree initializeClient endpoint"
+            )
+        return response
 
     try:
-        with httpx.Client(timeout=10.0) as client:
-            response = client.post(req_url, data=payload, headers=headers_dict)
-            response.raise_for_status()
+        response = post_call()
     except httpx.HTTPStatusError as exc:
+        if exc.response.status_code == 401:
+            while not MPS_TOKEN:
+                print("Refreshing MPS token...")
+                MPS_TOKEN = get_mps_token()
+            response = post_call()
         raise RuntimeError(
             f"Failed to initialize Braintree (status {exc.response.status_code}): {exc.response.text}"
         ) from exc

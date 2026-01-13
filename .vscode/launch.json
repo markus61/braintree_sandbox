@@ -25,6 +25,9 @@
                 "8000",
                 "--reload"
             ],
+            "env": {
+                "MPS_TOKEN": "NVhCaDhnYTc0ZTpFTFVJS1RCVUhWRFBPTUFJSUhERg=="
+            },
             "justMyCode": false,
             "console": "integratedTerminal"
         }
