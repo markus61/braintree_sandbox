@@ -17,7 +17,7 @@ from contextlib import asynccontextmanager
 
 from json import dumps, loads
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
@@ -182,7 +182,7 @@ class TransactionReserveRequest(BaseModel):
 
 @app.get("/")
 def get_index():
-    return """<!DOCTYPE html>
+    body = """<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -197,6 +197,7 @@ def get_index():
 </body>
 </html>
 """
+    return HTMLResponse(content=body)
 
 
 @app.get("/html/{filename}", response_class=HTMLResponse)
