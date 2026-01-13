@@ -216,6 +216,7 @@ def get_untested():
         <li><a href="/html/reserve_recurring.html">???</a></li>
         <li><a href="/html/webclient.html">Webclient</a></li>
     </ul>
+    if you want me to fix one of <a href="/untested.html">these</a>, please contact me.
 </body>
 </html>
 """
