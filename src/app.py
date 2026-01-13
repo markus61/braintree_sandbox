@@ -190,9 +190,16 @@ def get_index():
 </head>
 <body>
     <ul>
-        <li><a href="link1.html">Link 1</a></li>
-        <li><a href="link2.html">Link 2</a></li>
-        <li><a href="link3.html">Link 3</a></li>
+        <li><a href="/html/recurring_payment_reserve_creditcard.html">Recurring Payment Reserve Credit Card</a></li>
+        <li><a href="/html/recurring_payment_reserve_googlepay.html">Recurring Payment Reserve Google Pay</a></li>
+        <li><a href="/html/recurring_payment_reserve_paypal.html">Recurring Payment Reserve PayPal</a></li>
+    </ul>
+    The following endpoints are untested:
+    <ul>
+        <li><a href="/html/reserve_paypal.html">One Time Reserve PayPal</a></li>
+        <li><a href="/html/reserve.html">reserve ?</a></li>
+        <li><a href="/html/reserve_recurring.html">???</a></li>
+        <li><a href="/html/webclient.html">Webclient</a></li>
     </ul>
 </body>
 </html>
