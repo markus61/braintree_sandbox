@@ -26,7 +26,7 @@
                 "--reload"
             ],
             "env": {
-                "MPS_TOKEN": "NVhCaDhnYTc0ZTpFTFVJS1RCVUhWRFBPTUFJSUhERg=="
+                "MPS_TOKEN": "UUFtM25YcWRucTpPRE13TXpoaU16UXpPV1UxTW1SaVo="
             },
             "justMyCode": false,
             "console": "integratedTerminal"

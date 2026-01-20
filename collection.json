@@ -1,0 +1,2622 @@
+{
+    "info": {
+        "_postman_id": "bb5462fa-a48d-4798-a235-582b3d41bdfd",
+        "name": "Test-Collection-Multibrand",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Acceptance",
+            "item": [
+                {
+                    "name": "OAuth",
+                    "item": [
+                        {
+                            "name": "Get PBS API Token for BP 3023",
+                            "event": [
+                                {
+                                    "listen": "test",
+                                    "script": {
+                                        "exec": [
+                                            "var data = JSON.parse(responseBody);",
+                                            "postman.setGlobalVariable(\"access_token\", data.access_token);",
+                                            "",
+                                            "//added fake test to output response body",
+                                            "//tests[responseBody] = true;",
+                                            "",
+                                            "console.log(responseBody);"
+                                        ],
+                                        "type": "text/javascript"
+                                    }
+                                }
+                            ],
+                            "request": {
+                                "auth": {
+                                    "type": "basic",
+                                    "basic": [
+                                        {
+                                            "key": "password",
+                                            "value": "ELUIKTBUHVDPOMAIIHDF",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "key": "username",
+                                            "value": "5XBh8ga74e",
+                                            "type": "string"
+                                        },
+                                        {
+                                            "key": "saveHelperData",
+                                            "value": true,
+                                            "type": "boolean"
+                                        },
+                                        {
+                                            "key": "showPassword",
+                                            "value": false,
+                                            "type": "boolean"
+                                        }
+                                    ]
+                                },
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/x-www-form-urlencoded"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Basic cFNPbVFrZjZuQTpZVGt6WW1FMVpHTmpZbU0zT1RFeFo="
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "urlencoded",
+                                    "urlencoded": [
+                                        {
+                                            "key": "grant_type",
+                                            "value": "client_credentials",
+                                            "type": "text"
+                                        },
+                                        {
+                                            "key": "scope",
+                                            "value": "T00X7T70",
+                                            "type": "text"
+                                        }
+                                    ]
+                                },
+                                "url": {
+                                    "raw": "https://global.telekom.com/gcp-web-api/oauth",
+                                    "protocol": "https",
+                                    "host": [
+                                        "global",
+                                        "telekom",
+                                        "com"
+                                    ],
+                                    "path": [
+                                        "gcp-web-api",
+                                        "oauth"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ],
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    ""
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    ""
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "Checkout-API",
+                    "item": [
+                        {
+                            "name": "Direct Recurring Register",
+                            "item": [
+                                {
+                                    "name": "Direct Recurring Register applepay_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Recurring Register paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"474\",\n  \"currency\": \"EUR\",\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Register applepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"applepay_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n        \"paymentServiceData\": {\n    \"_nonce\": \"fake-apple-pay-visa-nonce\"\n  }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Register Update applepay_braintree",
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\r\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\r\n    \"paymentServiceData\": {\r\n        \"nonce\": \"fake-apple-pay-visa-nonce\"\r\n    }\r\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Direct Recurring Register googlepay_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Recurring Register paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"3023\",\n  \"currency\": \"EUR\",\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Register googlepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"googlepay_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\"\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Register Update googlepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\n    \"paymentServiceData\": {\n        \"nonce\": \"fake-android-pay-visa-debit-nonce\"\n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Direct Recurring Register creditcard_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Recurring Register paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"3023\",\n  \"currency\": \"EUR\",\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Register googlepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"creditcard_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n        \"paymentServiceData\": {\n        \"nonce\": \"fake-valid-visa-nonce\"\n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Register Update googlepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\n    \"paymentServiceData\": {\n        \"nonce\": \"fake-valid-visa-nonce\"\n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "register",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Direct Recurring Payment",
+                            "item": [
+                                {
+                                    "name": "Direct Recurring Payment applepay_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Recurring Payment paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"3023\",\n  \"currency\": \"EUR\",\n  \"grossAmount\": 9.99,\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment applepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"applepay_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n    \"lineItems\": [\n    {\n      \"name\": \"Zahlung + Speicherung des Zahlungsmandats\",\n      \"description\": \"Initial 15 € + Speicherung des Zahlungsmandats\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentServiceData\": {\n    \"nonce\": \"fake-apple-pay-visa-nonce\"\n  },\n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/reserve",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "reserve"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment Update applepay_braintree",
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\r\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\r\n    \"paymentServiceData\": {\r\n        \"nonce\": \"fake-apple-pay-visa-nonce\"\r\n    }\r\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment Claim",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\"\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/claim",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "claim"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Direct Recurring Payment googlepay_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Recurring Payment paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"3023\",\n  \"currency\": \"EUR\",\n  \"grossAmount\": 9.99,\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment googlepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"googlepay_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n    \"lineItems\": [\n    {\n      \"name\": \"Zahlung + Speicherung des Zahlungsmandats\",\n      \"description\": \"Initial 15 € + Speicherung des Zahlungsmandats\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentServiceData\": {\n    \"nonce\": \"fake-android-pay-visa-debit-nonce\"\n  },\n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/reserve",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "reserve"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment Update googlepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\n    \"paymentServiceData\": {\n        \"nonce\": \"fake-android-pay-visa-debit-nonce\"\n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment Claim",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\"\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/claim",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "claim"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Direct Recurring Payment creditcard_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Recurring Payment paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"3023\",\n  \"currency\": \"EUR\",\n  \"grossAmount\": 9.99,\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment creditcard_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"creditcard_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n    \"lineItems\": [\n    {\n      \"name\": \"Zahlung + Speicherung des Zahlungsmandats\",\n      \"description\": \"Initial 15 € + Speicherung des Zahlungsmandats\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentServiceData\": {\n    \"nonce\": \"fake-valid-visa-nonce\"\n  },\n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/reserve",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "reserve"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment Update creditcard_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\n    \"paymentServiceData\": {\n        \"nonce\": \"fake-valid-visa-nonce\"\n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Recurring Payment Claim",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\"\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/direct/claim",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "recurring",
+                                                        "payment",
+                                                        "direct",
+                                                        "claim"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Direct Payment",
+                            "item": [
+                                {
+                                    "name": "Direct Payment applepay_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Payment paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"3023\",\n  \"currency\": \"EUR\",\n  \"grossAmount\": 9.99,\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment applepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"applepay_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n    \"lineItems\": [\n    {\n      \"name\": \"Zahlung + Speicherung des Zahlungsmandats\",\n      \"description\": \"Initial 15 € + Speicherung des Zahlungsmandats\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentServiceData\": {\n    \"nonce\": \"fake-apple-pay-visa-nonce\"\n  },\n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/reserve",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "reserve"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment Update applepay_braintree",
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\r\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\r\n    \"paymentServiceData\": {\r\n        \"nonce\": \"fake-apple-pay-visa-nonce\"\r\n    }\r\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment Claim",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\"\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/claim",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "claim"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Direct Payment googlepay_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Payment paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"3023\",\n  \"currency\": \"EUR\",\n  \"grossAmount\": 9.99,\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment googlepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"googlepay_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n    \"lineItems\": [\n    {\n      \"name\": \"Zahlung + Speicherung des Zahlungsmandats\",\n      \"description\": \"Initial 15 € + Speicherung des Zahlungsmandats\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentServiceData\": {\n    \"nonce\": \"fake-android-pay-visa-debit-nonce\"\n  },\n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/reserve",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "reserve"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment Update googlepay_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\n    \"paymentServiceData\": {\n        \"nonce\": \"fake-android-pay-visa-debit-nonce\"\n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment Claim",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\"\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/claim",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "claim"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "Direct Payment creditcard_braintree",
+                                    "item": [
+                                        {
+                                            "name": "Direct Payment paymentmethods",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}"
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n  \"businessPartnerConfigId\": \"3023\",\n  \"currency\": \"EUR\",\n  \"grossAmount\": 9.99,\n  \"negativeLineItemsPresent\": false\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/paymentmethods/",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "paymentmethods",
+                                                        ""
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment creditcard_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n    \"paymentMethod\":\"creditcard_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n    \"lineItems\": [\n    {\n      \"name\": \"Zahlung + Speicherung des Zahlungsmandats\",\n      \"description\": \"Initial 15 € + Speicherung des Zahlungsmandats\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentServiceData\": {\n    \"nonce\": \"fake-valid-visa-nonce\"\n  },\n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/reserve",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "reserve"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment Update creditcard_braintree",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\",\n    \"paymentServiceData\": {\n        \"nonce\": \"fake-valid-visa-nonce\"\n    }\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/update",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "update"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        },
+                                        {
+                                            "name": "Direct Payment Claim",
+                                            "event": [
+                                                {
+                                                    "listen": "test",
+                                                    "script": {
+                                                        "exec": [
+                                                            "var jsonData = JSON.parse(responseBody);",
+                                                            "",
+                                                            "if (responseCode.code === 200) {",
+                                                            "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                            "}",
+                                                            "",
+                                                            ""
+                                                        ],
+                                                        "type": "text/javascript"
+                                                    }
+                                                }
+                                            ],
+                                            "request": {
+                                                "method": "POST",
+                                                "header": [
+                                                    {
+                                                        "key": "Authorization",
+                                                        "value": "Bearer {{access_token}}"
+                                                    },
+                                                    {
+                                                        "key": "Content-Type",
+                                                        "value": "application/json"
+                                                    }
+                                                ],
+                                                "body": {
+                                                    "mode": "raw",
+                                                    "raw": "{\n\t\"checkoutSessionId\": \"{{checkoutSessionId}}\"\n}"
+                                                },
+                                                "url": {
+                                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/direct/claim",
+                                                    "protocol": "https",
+                                                    "host": [
+                                                        "pbs",
+                                                        "acceptance",
+                                                        "p5x",
+                                                        "telekom-dienste",
+                                                        "de"
+                                                    ],
+                                                    "path": [
+                                                        "pbs-checkout-api",
+                                                        "direct",
+                                                        "claim"
+                                                    ]
+                                                }
+                                            },
+                                            "response": []
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Recurring Register (Paypal)",
+                            "item": [
+                                {
+                                    "name": "Recurring Register",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "var jsonData = JSON.parse(responseBody);",
+                                                    "",
+                                                    "if (responseCode.code === 200) {",
+                                                    "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                    "}"
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"paymentMethod\":\"paypal_braintree\",\r\n    \"businessPartnerConfigId\":\"3023\",\r\n    \"currency\":\"EUR\",\r\n    \"locale\" : \"de_DE\",\r\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\r\n    \"returnUrl\":\"http://www.telekom.de\"\r\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "recurring",
+                                                "register"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Recurring Register Result",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "var jsonData = JSON.parse(responseBody);",
+                                                    "if (responseCode.code === 200) {",
+                                                    "    postman.setGlobalVariable(\"paymentHandle\", jsonData.paymentHandle);",
+                                                    "}",
+                                                    "",
+                                                    ""
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"checkoutSessionId\": \"{{checkoutSessionId}}\"\r\n}\r\n"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/register/result",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "recurring",
+                                                "register",
+                                                "result"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Recurring Payment (Paypal)",
+                            "item": [
+                                {
+                                    "name": "Recurring Payment",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "var jsonData = JSON.parse(responseBody);",
+                                                    "",
+                                                    "if (responseCode.code === 200) {",
+                                                    "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                    "}"
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"paymentMethod\":\"paypal_braintree\",\r\n    \"businessPartnerConfigId\":\"3023\",\r\n    \"currency\":\"EUR\",\r\n    \"locale\" : \"de_DE\",\r\n    \"description\":\"Ihr Multibrand Zahlungsmandat\",\r\n    \"returnUrl\":\"http://www.telekom.de\",\r\n    \"lineItems\": [\r\n    {\r\n      \"name\": \"Zahlung + Speicherung des Zahlungsmandats\",\r\n      \"description\": \"Initial 15 € + Speicherung des Zahlungsmandats\",\r\n      \"grossAmount\": 15,\r\n      \"taxRate\": 19,\r\n      \"quantity\": 1,\r\n      \"uiDetails\": {}\r\n    }\r\n  ],\r\n    \"settlementData\": {\r\n         \"settlementConfigurationId\":\"32727\"   \r\n    }\r\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "recurring",
+                                                "payment"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Recurring Payment Result",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "var jsonData = JSON.parse(responseBody);",
+                                                    "if (responseCode.code === 200) {",
+                                                    "    postman.setGlobalVariable(\"paymentHandle\", jsonData.paymentHandle);",
+                                                    "}",
+                                                    "",
+                                                    ""
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"checkoutSessionId\": \"{{checkoutSessionId}}\"\r\n}\r\n"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/payment/result",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "recurring",
+                                                "payment",
+                                                "result"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Claim",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"checkoutSessionId\" : \"{{checkoutSessionId}}\"\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/claim",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "claim"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "One Time Payment (Paypal)",
+                            "item": [
+                                {
+                                    "name": "One Time Payment Reserve",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "var jsonData = JSON.parse(responseBody);",
+                                                    "",
+                                                    "if (responseCode.code === 200) {",
+                                                    "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                    "}"
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"paymentMethod\":\"paypal_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihre Multibrand Aufladung\",\n    \"returnUrl\":\"http://www.telekom.de\",\n    \"lineItems\": [\n    {\n      \"name\": \"Einmalige Zahlung\",\n      \"description\": \"Einmalige Zahlung 15 €\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/onetime/reserve",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "onetime",
+                                                "reserve"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "One Time Payment Reserve with paymentHandle",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "var jsonData = JSON.parse(responseBody);",
+                                                    "",
+                                                    "if (responseCode.code === 200) {",
+                                                    "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                    "}"
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"paymentMethod\":\"paypal_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihre Multibrand Aufladung mit gespeichertem Zahlungsmandat\",\n    \"returnUrl\":\"http://www.telekom.de\",\n    \"lineItems\": [\n    {\n      \"name\": \"Einmalige Zahlung\",\n      \"description\": \"Einmalige Zahlung 15 €\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentHandle\": \"Qij4q64yB+Jlw1sEvxuAs2LAIs/ypSD2c0QGeXTroiAKq8F/HHeP8I/xM21Cs9E2MdOfYHXbNpfiWY1coiNucz1y8m8kRyihxAvpsWCfSPWxUM2pbexA2+oIUEhkjQxFQ+NDABc4gNmc9fjtYYl/Qw65FzHChCbDkZR5eyynwz/LD7UMJBZPER/z\",  \n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/onetime/reserve",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "onetime",
+                                                "reserve"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "One Time Payment Result",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\r\n    \"checkoutSessionId\": \"{{checkoutSessionId}}\"\r\n}\r\n"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/onetime/result",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "onetime",
+                                                "result"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Claim",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"checkoutSessionId\" : \"{{checkoutSessionId}}\"\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/claim",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "claim"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        },
+                        {
+                            "name": "Recurring Charge",
+                            "item": [
+                                {
+                                    "name": "Recurring Charge Reserve",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "var jsonData = JSON.parse(responseBody);",
+                                                    "",
+                                                    "if (responseCode.code === 200) {",
+                                                    "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                    "}",
+                                                    "",
+                                                    ""
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"paymentMethod\":\"paypal_braintree\",\n    \"businessPartnerConfigId\":\"3023\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihre automatische Multibrand Abbuchung\",\n    \"lineItems\": [\n    {\n      \"name\": \"Automatische Aufladung\",\n      \"description\": \"Automatische Aufladung 15 €\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentHandle\": \"Qij4q64yB+Jlw1sEvxuAs2LAIs/ypSD2c0QGeXTroiAKq8F/HHeP8I/xM21Cs9E2MdOfYHXbNpfiWY1coiNucz1y8m8kRyihxAvpsWCfSPWxUM2pbexA2+oIUEhkjQxFQ+NDABc4gNmc9fjtYYl/Qw65FzHChCbDkZR5eyynwz/LD7UMJBZPER/z\",  \n    \"settlementData\": {\n         \"settlementConfigurationId\":\"32727\"   \n    }\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/charge/reserve",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "recurring",
+                                                "charge",
+                                                "reserve"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Claim",
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Accept",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            },
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"checkoutSessionId\" : \"{{checkoutSessionId}}\"\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/claim",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "claim"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                },
+                                {
+                                    "name": "Recurring Charge ReserveAndClaim",
+                                    "event": [
+                                        {
+                                            "listen": "test",
+                                            "script": {
+                                                "exec": [
+                                                    "var jsonData = JSON.parse(responseBody);",
+                                                    "",
+                                                    "if (responseCode.code === 200) {",
+                                                    "    postman.setGlobalVariable(\"checkoutSessionId\", jsonData.checkoutSessionId);",
+                                                    "}",
+                                                    "",
+                                                    ""
+                                                ],
+                                                "type": "text/javascript"
+                                            }
+                                        }
+                                    ],
+                                    "request": {
+                                        "method": "POST",
+                                        "header": [
+                                            {
+                                                "key": "Authorization",
+                                                "value": "Bearer {{access_token}}"
+                                            },
+                                            {
+                                                "key": "Content-Type",
+                                                "value": "application/json"
+                                            }
+                                        ],
+                                        "body": {
+                                            "mode": "raw",
+                                            "raw": "{\n    \"paymentMethod\":\"paypal_braintree\",\n    \"businessPartnerConfigId\":\"474\",\n    \"currency\":\"EUR\",\n    \"locale\" : \"de_DE\",\n    \"description\":\"Ihre automatische Multibrand Abbuchung\",\n    \"lineItems\": [\n    {\n      \"name\": \"Automatische Aufladung\",\n      \"description\": \"Automatische Aufladung 15 €\",\n      \"grossAmount\": 15,\n      \"taxRate\": 19,\n      \"quantity\": 1,\n      \"uiDetails\": {}\n    }\n  ],\n    \"paymentHandle\": \"zdlxRYLMdTS18OnI8CIUH8pZhXUjd0q8Qn28j6orIJ5Ct6rycRuVrf/PZNxfQ1+VzctTFViiyJxGwBXHIn/c0Uk5KbCZxYpQlEc1Tl1oSST8bUxvgFvSq9z2kpHf7Ua9oyyhNdxs+qB/Vz3eYoSB89yhxz4wj4yhxFCAPdcDutFAO+YkxUe5brp3\",  \n    \"settlementData\": {\n         \"settlementConfigurationId\":\"5988\"   \n    }\n}"
+                                        },
+                                        "url": {
+                                            "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/charge/reserveAndClaim",
+                                            "protocol": "https",
+                                            "host": [
+                                                "pbs",
+                                                "acceptance",
+                                                "p5x",
+                                                "telekom-dienste",
+                                                "de"
+                                            ],
+                                            "path": [
+                                                "pbs-checkout-api",
+                                                "recurring",
+                                                "charge",
+                                                "reserveAndClaim"
+                                            ]
+                                        }
+                                    },
+                                    "response": []
+                                }
+                            ]
+                        }
+                    ],
+                    "event": [
+                        {
+                            "listen": "prerequest",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    ""
+                                ]
+                            }
+                        },
+                        {
+                            "listen": "test",
+                            "script": {
+                                "type": "text/javascript",
+                                "exec": [
+                                    ""
+                                ]
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "MAPI - Get ClientToken",
+                    "item": [
+                        {
+                            "name": "init client (ACC)",
+                            "request": {
+                                "method": "POST",
+                                "header": [
+                                    {
+                                        "key": "Authorization",
+                                        "value": "bearer {{access_token}}",
+                                        "type": "text"
+                                    },
+                                    {
+                                        "key": "Content-Type",
+                                        "value": "application/json",
+                                        "type": "text"
+                                    },
+                                    {
+                                        "key": "Authorization",
+                                        "value": "Bearer eyJpc3MiOiJnY3AiLCJhdWQiOiJodHRwczovL2dsb2JhbC50ZWxla29tLmNvbS9wYXltZW50LWJ1c2luZXNzLXN1aXRlL3BicyIsImlhdCI6MTc2NjA3MTUwNywibmJmIjoxNzY2MDcxNDQ3LCJleHAiOjE3NjYxMDAzMDcsImp0aSI6IjFlZWFjNTNhLWUwN2YtNGIxOC05NWM0LWM0ZGI2YWY3MWFjZCIsImh0dHA6Ly9nY3AudGVsZWtvbS5kZS9heHNjaGVtYS90ZW5hbnQiOiJNdWx0aWJyYW5kIiwiaHR0cDovL2djcC50ZWxla29tLmRlL2F4c2NoZW1hL2F1dGhvcml0aWVzIjoiUk9MRV9TRVRUTEVNRU5UX0NMSUVOVCBST0xFX1BBWU1FTlRfQ0xJRU5UIFJPTEVfQ0hFQ0tPVVRfQ0xJRU5UIFJPTEVfTUFQSV9DTElFTlQifQ",
+                                        "type": "default",
+                                        "disabled": true
+                                    }
+                                ],
+                                "body": {
+                                    "mode": "raw",
+                                    "raw": "{\r\n    \"businessPartnerConfigId\": \"3023\",\r\n    \"paymentMethodType\": \"applepay\"       \r\n}"
+                                },
+                                "url": {
+                                    "raw": "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-mapi-adapter/braintree/initializeClient",
+                                    "protocol": "https",
+                                    "host": [
+                                        "pbs",
+                                        "acceptance",
+                                        "p5x",
+                                        "telekom-dienste",
+                                        "de"
+                                    ],
+                                    "path": [
+                                        "pbs-mapi-adapter",
+                                        "braintree",
+                                        "initializeClient"
+                                    ]
+                                }
+                            },
+                            "response": []
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

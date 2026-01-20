@@ -17,7 +17,7 @@ from contextlib import asynccontextmanager
 
 from json import dumps, loads
 from dotenv import load_dotenv
-from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
@@ -121,7 +121,7 @@ def initialize_braintree(method: str) -> str:
     }
 
     payload = {
-        "businessPartnerConfigId": "3023",
+        "businessPartnerConfigId": "474",
         "paymentMethodType": method
     }
 
@@ -264,7 +264,7 @@ def reserve(
 
     payload = dumps({
         "paymentMethod": "creditcard_braintree",
-        "businessPartnerConfigId": "3023",
+        "businessPartnerConfigId": "474",
         "currency": "EUR",
         "locale": "de_DE",
         "description": "Ihr Multibrand Zahlungsmandat",
@@ -303,7 +303,7 @@ def reserve_recurring(
 
     payload = dumps({
         "paymentMethod": f"{body.payment_method_token}_braintree",
-        "businessPartnerConfigId": "3023",
+        "businessPartnerConfigId": "474",
         "currency": "EUR",
         "locale": "de_DE",
         "description": "Ihr Multibrand Zahlungsmandat",
@@ -342,7 +342,7 @@ def recurring_paypal(
 
     payload = dumps({
         "paymentMethod": "paypal_braintree",
-        "businessPartnerConfigId": "3023",
+        "businessPartnerConfigId": "474",
         "currency": "EUR",
         "locale": "de_DE",
         "description": "Ihr Multibrand Zahlungsmandat",
