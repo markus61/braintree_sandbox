@@ -193,6 +193,7 @@ def get_index():
         <li><a href="/html/recurring_payment_reserve_creditcard.html">Recurring Payment Reserve Credit Card</a></li>
         <li><a href="/html/recurring_payment_reserve_googlepay.html">Recurring Payment Reserve Google Pay</a></li>
         <li><a href="/html/recurring_payment_reserve_paypal.html">Recurring Payment Reserve PayPal</a></li>
+        <li><a href="/html/onetime_payment_reserve_creditcard.html">One Time Payment Reserve Credit Card</a></li>
     </ul>
     if you want me to fix one of <a href="/untested.html">these</a>, please contact me.
 </body>
@@ -262,7 +263,7 @@ def reserve(
         "Authorization": f"bearer {MPS_TOKEN}",
     }
 
-    payload = dumps({
+    payload = {
         "paymentMethod": "creditcard_braintree",
         "businessPartnerConfigId": "474",
         "currency": "EUR",
@@ -281,9 +282,48 @@ def reserve(
         ],
         "paymentServiceData": {"nonce": body.payment_method_nonce},
         "settlementData": {"settlementConfigurationId": "5988"},
-    })
+    }
     with httpx.Client(timeout=10.0) as client:
-        data = client.post(req_url, data=payload, headers=headers_dict)
+        data = client.post(req_url, json=payload, headers=headers_dict)
+
+    print(data.text)
+    return data.text
+
+
+@app.post("/onetime/payment/reserve")
+def reserve_onetime(
+    body: TransactionReserveRequest,
+):
+    """Reserve a recurring mandate-based transaction via the checkout API."""
+    req_url = "https://pbs.acceptance.p5x.telekom-dienste.de/pbs-checkout-api/recurring/onetime/reserve"
+    headers_dict = {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": f"bearer {MPS_TOKEN}",
+    }
+
+    payload = {
+        "paymentMethod": f"{body.payment_method_token}_braintree",
+        "businessPartnerConfigId": "474",
+        "currency": "EUR",
+        "locale": "de_DE",
+        "description": "Ihr Multibrand Zahlungsmandat",
+        "returnUrl": "https://www.dom.de",
+        "lineItems": [
+            {
+                "name": "Zahlung + Speicherung des Zahlungsmandats",
+                "description": f"Einmal Zahlung {body.amount} €.",
+                "grossAmount": body.amount,
+                "taxRate": 19,
+                "quantity": 1,
+                "uiDetails": {},
+            }
+        ],
+        "paymentServiceData": {"nonce": body.payment_method_nonce},
+        "settlementData": {"settlementConfigurationId": "5988"},
+    }
+    with httpx.Client(timeout=10.0) as client:
+        data = client.post(req_url, json=payload, headers=headers_dict)
 
     print(data.text)
     return data.text
@@ -301,7 +341,7 @@ def reserve_recurring(
         "Authorization": f"bearer {MPS_TOKEN}",
     }
 
-    payload = dumps({
+    payload = {
         "paymentMethod": f"{body.payment_method_token}_braintree",
         "businessPartnerConfigId": "474",
         "currency": "EUR",
@@ -311,7 +351,7 @@ def reserve_recurring(
         "lineItems": [
             {
                 "name": "Zahlung + Speicherung des Zahlungsmandats",
-                "description": "Initial 15 € + Speicherung des Zahlungsmandats",
+                "description": f"Initial {body.amount} € + Speicherung des Zahlungsmandats",
                 "grossAmount": body.amount,
                 "taxRate": 19,
                 "quantity": 1,
@@ -320,9 +360,9 @@ def reserve_recurring(
         ],
         "paymentServiceData": {"nonce": body.payment_method_nonce},
         "settlementData": {"settlementConfigurationId": "5988"},
-    })
+    }
     with httpx.Client(timeout=10.0) as client:
-        data = client.post(req_url, data=payload, headers=headers_dict)
+        data = client.post(req_url, json=payload, headers=headers_dict)
 
     print(data.text)
     return data.text
@@ -340,7 +380,7 @@ def recurring_paypal(
         "Authorization": f"bearer {MPS_TOKEN}",
     }
 
-    payload = dumps({
+    payload = {
         "paymentMethod": "paypal_braintree",
         "businessPartnerConfigId": "474",
         "currency": "EUR",
@@ -358,9 +398,9 @@ def recurring_paypal(
             }
         ],
         "settlementData": {"settlementConfigurationId": "5988"},
-    })
+    }
     with httpx.Client(timeout=10.0) as client:
-        data = client.post(req_url, data=payload, headers=headers_dict)
+        data = client.post(req_url, json=payload, headers=headers_dict)
 
     print(data.text)
     return data.json()
