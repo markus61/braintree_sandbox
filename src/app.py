@@ -280,7 +280,7 @@ def reserve(
             }
         ],
         "paymentServiceData": {"nonce": body.payment_method_nonce},
-        "settlementData": {"settlementConfigurationId": "32727"},
+        "settlementData": {"settlementConfigurationId": "5988"},
     })
     with httpx.Client(timeout=10.0) as client:
         data = client.post(req_url, data=payload, headers=headers_dict)
@@ -319,7 +319,7 @@ def reserve_recurring(
             }
         ],
         "paymentServiceData": {"nonce": body.payment_method_nonce},
-        "settlementData": {"settlementConfigurationId": "32727"},
+        "settlementData": {"settlementConfigurationId": "5988"},
     })
     with httpx.Client(timeout=10.0) as client:
         data = client.post(req_url, data=payload, headers=headers_dict)
@@ -357,7 +357,7 @@ def recurring_paypal(
                 "uiDetails": {},
             }
         ],
-        "settlementData": {"settlementConfigurationId": "32727"},
+        "settlementData": {"settlementConfigurationId": "5988"},
     })
     with httpx.Client(timeout=10.0) as client:
         data = client.post(req_url, data=payload, headers=headers_dict)
